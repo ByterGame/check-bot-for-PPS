@@ -1,6 +1,6 @@
 import asyncio
 from pyrogram import Client
-from pyrogram.errors import FloodWait, UserIsBlocked, PeerIdInvalid, PhoneNumberBanned, UserDeactivatedBan
+from pyrogram.errors import FloodWait, PeerIdInvalid, PhoneNumberBanned, UserDeactivatedBan
 from config import logger, API_IDS, API_HASHS, REAL_PHONES, ADMINS
 from create_bot import bot
 
@@ -13,7 +13,14 @@ class Checker:
         for api_id, api_hash, phone in zip(API_IDS, API_HASHS, REAL_PHONES):
             try:
                 session_name = f"test_{api_id}"
-                self.client = Client(session_name, api_id=api_id, api_hash=api_hash, phone_number=phone)
+                self.client = Client(session_name,
+                                     api_id=api_id,
+                                     api_hash=api_hash,
+                                     device_model="Desktop (Python Script)",
+                                     system_version="Windows 11",
+                                     app_version="2.0.106",
+                                     lang_code="ru")
+                
                 await self.client.start()
                 await self.client.get_me()
                 logger.info(f"Клиент с номером {phone} успешно получен.")

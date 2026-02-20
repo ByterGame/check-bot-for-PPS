@@ -209,3 +209,6 @@ __marimo__/
 
 # Pyrogram Sessions
 test_*
+
+# vscode
+.vscode
