@@ -24,7 +24,7 @@ class Checker:
                 await self.client.start()
                 await self.client.get_me()
                 logger.info(f"Клиент с номером {phone} успешно получен.")
-                await self.client.stop()
+                self.is_started = True
                 break
             except (PhoneNumberBanned, UserDeactivatedBan):
                 logger.error(f"Тестовый аккаунт с номером {phone} заблокирован")
@@ -77,7 +77,7 @@ class Checker:
                 return {"success": False, "error": f"""Бот с тегом {target_username} не найден или недоступен.\n\n
                                                     Если вы считаете, что делаете все верно, свяжитесь лично @byter1"""}
 
-            result = {"success": True, "error": None}
+            result = {"success": True, "error": None, "tests_passed": len(scenarios)}
 
             for i, step in enumerate(scenarios):
                 input_msg = step["input"]
@@ -92,19 +92,22 @@ class Checker:
                     result["success"] = False
                     error_msg = f"Шаг {i+1}: Бот не ответил на '{input_msg}'"
                     result["error"] = error_msg
+                    result["tests_passed"] = i
                     break
                 
                 last_msg = messages[0]
 
                 if last_msg.from_user and last_msg.from_user.is_bot:
                     response_text = last_msg.text or (last_msg.caption if last_msg.caption else "")
-                    if expected not in response_text:
+                    if str(expected).strip() != response_text:
                         result["success"] = False
                         result["error"] = f"Шаг {i+1}: Ошибка валидации. Ожидалось содержимое '{expected}', получено '{response_text}'\n\nВходной тест: {input_msg}"
+                        result["tests_passed"] = i
                         break
                 else:
                      result["success"] = False
                      result["error"] = f"Шаг {i+1}: Не получен ответ от бота."
+                     result["tests_passed"] = i
                      break
         except FloodWait as e:
             result["success"] = False
