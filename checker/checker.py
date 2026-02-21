@@ -82,7 +82,7 @@ class Checker:
             for i, step in enumerate(scenarios):
                 input_msg = step["input"]
                 expected = step.get("output")
-                wait_time = 10.0
+                wait_time = 20.0
 
                 await self.client.send_message(chat_id, input_msg)
                 await asyncio.sleep(wait_time)
